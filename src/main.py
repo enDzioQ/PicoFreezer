@@ -1,4 +1,3 @@
-import utime
 from tools.lcd import LCD
 from gui.gui import GUI
 

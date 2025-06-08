@@ -1,28 +1,23 @@
 from machine import Pin
 import utime
+from gui.base_gui import BaseGUI
 from gui.temperature_gui import TemperatureGUI
 
-class GUI:
+class GUI(BaseGUI):
+    """Main menu GUI implementation"""
+    
     def __init__(self, lcd, up_pin=13, down_pin=15, select_pin=14):
-        """Initialize the GUI with LCD and button pins"""
-        self.lcd = lcd
-        
-        # Configure buttons with internal pull-up resistors
-        self.up_button = Pin(up_pin, Pin.IN, Pin.PULL_UP)
-        self.down_button = Pin(down_pin, Pin.IN, Pin.PULL_UP)
-        self.select_button = Pin(select_pin, Pin.IN, Pin.PULL_UP)
+        """Initialize the main GUI with LCD and button pins"""
+        super().__init__(lcd, up_pin, down_pin, select_pin)
         
         # Menu options
         self.menu_options = ["Temperature", "Option1", "Option2"]
         self.current_position = 0
         self.top_item_index = 0
         
-        # Initialize sub-GUIs
-        self.temperature_gui = TemperatureGUI(lcd, self.select_button)
-        
         # Setup display
         self.refresh_menu()
-        
+    
     def refresh_menu(self):
         """Update the LCD display with current menu items"""
         self.lcd.clear()
@@ -74,7 +69,10 @@ class GUI:
         selected = self.menu_options[self.current_position]
         
         if selected == "Temperature":
-            self.temperature_gui.show_temperature()
+            # Create a temperature GUI and run it
+            temp_gui = TemperatureGUI(self.lcd, self.select_button, self.up_button, self.down_button)
+            temp_gui.run()
+            # Return to menu when temperature screen exits
             self.refresh_menu()
         elif selected == "Option1":
             self.show_option("Option 1 selected")
@@ -92,17 +90,16 @@ class GUI:
     def run(self):
         """Main loop for GUI operation"""
         while True:
-            # Check buttons - now looking for LOW (0) state when pressed (pull-up mode)
-            if self.up_button.value() == 0:  # Button pressed (active low)
+            # Check for button presses using the base class methods
+            if self.is_up_pressed():
                 self.move_up()
-                utime.sleep(0.2)  # Debounce
-            
-            if self.down_button.value() == 0:  # Button pressed
+                
+            if self.is_down_pressed():
                 self.move_down()
-                utime.sleep(0.2)  # Debounce
-            
-            if self.select_button.value() == 0:  # Button pressed
+                
+            if self.is_select_pressed():
                 self.select_option()
-                utime.sleep(0.2)  # Debounce
 
+            # Update button states for next iteration
+            self.update_button_states()
             utime.sleep(0.05)  # Small delay to prevent high CPU usage

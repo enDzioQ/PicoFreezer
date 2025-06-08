@@ -48,6 +48,9 @@ class LCD(I2cLcd):
         temp_str = f"{temp_value}\1C"
         self.center_text(temp_str, 1)
         
-        # Add a small delay
-        utime.sleep(2)
+        # Return temperature as a float for threshold comparison
+        try:
+            return float(temp_value)
+        except ValueError:
+            return 0.0
 
