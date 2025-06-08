@@ -6,9 +6,12 @@ from gui.temperature_gui import TemperatureGUI
 class GUI(BaseGUI):
     """Main menu GUI implementation"""
     
-    def __init__(self, lcd, up_pin=13, down_pin=15, select_pin=14):
+    def __init__(self, lcd, temp_monitor, up_pin=13, down_pin=15, select_pin=14):
         """Initialize the main GUI with LCD and button pins"""
         super().__init__(lcd, up_pin, down_pin, select_pin)
+        
+        # Store temperature monitor reference
+        self.temp_monitor = temp_monitor
         
         # Menu options
         self.menu_options = ["Temperature", "Option1", "Option2"]
@@ -70,7 +73,13 @@ class GUI(BaseGUI):
         
         if selected == "Temperature":
             # Create a temperature GUI and run it
-            temp_gui = TemperatureGUI(self.lcd, self.select_button, self.up_button, self.down_button)
+            temp_gui = TemperatureGUI(
+                self.lcd, 
+                self.select_button, 
+                self.up_button, 
+                self.down_button,
+                self.temp_monitor
+            )
             temp_gui.run()
             # Return to menu when temperature screen exits
             self.refresh_menu()
@@ -81,9 +90,7 @@ class GUI(BaseGUI):
     
     def show_option(self, message):
         """Display generic option message with timeout"""
-        self.lcd.clear()
-        self.lcd.center_text(message, 0)
-        self.lcd.center_text("Returning...", 1)
+        self.lcd.display_option_screen(message)
         utime.sleep(2)
         self.refresh_menu()
     
