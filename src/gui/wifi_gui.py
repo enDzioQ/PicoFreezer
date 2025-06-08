@@ -1,6 +1,7 @@
 import utime
 from machine import Pin
 from gui.base_gui import BaseGUI
+from tools.wifi_password_manager import WiFiPasswordManager
 
 class WiFiGUI(BaseGUI):
     """WiFi connection GUI"""
@@ -22,6 +23,9 @@ class WiFiGUI(BaseGUI):
         
         # WiFi manager reference
         self.wifi = wifi_manager
+        
+        # Initialize password manager
+        self.password_manager = WiFiPasswordManager()
         
         # GUI state
         self.state = "initial"  # initial, scanning, network_list, password_entry, connected
@@ -199,8 +203,24 @@ class WiFiGUI(BaseGUI):
     
     def start_password_entry(self):
         """Initialize the password entry screen"""
-        self.password = ""
-        self.cursor_pos = 0
+        # Check if there's a saved password for this network
+        saved_password = self.password_manager.get_password(self.selected_network)
+        
+        if saved_password:
+            # Pre-fill with saved password
+            self.password = saved_password
+            self.cursor_pos = len(saved_password)
+            
+            # Display a message about using saved password
+            self.lcd.clear()
+            self.lcd.center_text("Using saved", 0)
+            self.lcd.center_text("password", 1)
+            utime.sleep(1)
+        else:
+            # No saved password, start with empty field
+            self.password = ""
+            self.cursor_pos = 0
+            
         self.char_set = self.LOWERCASE_CHARS
         self.current_char_index = 0
         self.caps_lock = False
@@ -293,6 +313,9 @@ class WiFiGUI(BaseGUI):
         success = self.wifi.connect(self.selected_network, self.password)
         
         if success:
+            # Save the successful password
+            self.password_manager.save_password(self.selected_network, self.password)
+            
             self.state = "connected"
             self.display_connected_state()
         else:
