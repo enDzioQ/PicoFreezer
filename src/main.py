@@ -2,6 +2,7 @@ import utime
 from machine import Pin
 from tools.lcd import LCD
 from tools.ds import DS
+from tools.wifi import WiFi
 from gui.gui import GUI
 from monitor.temperature_monitor import TemperatureMonitor
 
@@ -12,10 +13,14 @@ def main():
     
     # Display firmware information
     print("PicoFreezer starting up...")
+    
+    # Initialize WiFi module
+    print("Initializing WiFi module...")
+    wifi_manager = WiFi()
 
     # Create the temperature monitor (will run on core 1)
     print("Creating temperature monitor...")
-    temp_monitor = TemperatureMonitor(ds_sensor=ds_sensor, led_pin=16)
+    temp_monitor = TemperatureMonitor(ds_sensor=ds_sensor, led_pin=16, wifi_manager=wifi_manager)
 
     # Initialize the LCD display
     print("Initializing LCD...")
@@ -45,7 +50,7 @@ def main():
         
         # Create and run GUI (on core 0)
         print("Starting GUI...")
-        gui = GUI(lcd=lcd_display, temp_monitor=temp_monitor)
+        gui = GUI(lcd=lcd_display, temp_monitor=temp_monitor, wifi_manager=wifi_manager)
         gui.run()
         
     except KeyboardInterrupt:
@@ -56,6 +61,10 @@ def main():
         
         # Wait briefly to ensure thread has time to exit
         utime.sleep(0.5)
+        
+        # Disconnect WiFi if connected
+        if wifi_manager.is_connected():
+            wifi_manager.disconnect()
         
         # Display shutdown message
         lcd_display.clear()

@@ -2,19 +2,21 @@ from machine import Pin
 import utime
 from gui.base_gui import BaseGUI
 from gui.temperature_gui import TemperatureGUI
+from gui.wifi_gui import WiFiGUI
 
 class GUI(BaseGUI):
     """Main menu GUI implementation"""
     
-    def __init__(self, lcd, temp_monitor, up_pin=13, down_pin=15, select_pin=14):
+    def __init__(self, lcd, temp_monitor, wifi_manager, up_pin=13, down_pin=15, select_pin=14):
         """Initialize the main GUI with LCD and button pins"""
         super().__init__(lcd, up_pin, down_pin, select_pin)
         
-        # Store temperature monitor reference
+        # Store module references
         self.temp_monitor = temp_monitor
+        self.wifi = wifi_manager
         
-        # Menu options
-        self.menu_options = ["Temperature", "Option1", "Option2"]
+        # Menu options - replace Option1 with WI-FI
+        self.menu_options = ["Temperature", "WI-FI", "Option2"]
         self.current_position = 0
         self.top_item_index = 0
         
@@ -83,8 +85,18 @@ class GUI(BaseGUI):
             temp_gui.run()
             # Return to menu when temperature screen exits
             self.refresh_menu()
-        elif selected == "Option1":
-            self.show_option("Option 1 selected")
+        elif selected == "WI-FI":
+            # Create a WiFi GUI and run it
+            wifi_gui = WiFiGUI(
+                self.lcd, 
+                self.wifi,
+                self.select_button, 
+                self.up_button, 
+                self.down_button
+            )
+            wifi_gui.run()
+            # Return to menu when WiFi screen exits
+            self.refresh_menu()
         elif selected == "Option2":
             self.show_option("Option 2 selected")
     

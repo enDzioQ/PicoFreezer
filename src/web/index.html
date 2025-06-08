@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PicoFreezer Control</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PicoFreezer Control</h1>
+        
+        <div class="status-box">
+            <div>
+                <span>Current Temperature:</span>
+                <span id="current-temp" class="status-value">--</span>
+                <span>°C</span>
+            </div>
+            <div>
+                <span>Target Temperature:</span>
+                <span id="target-temp" class="status-value">--</span>
+                <span>°C</span>
+            </div>
+            <div>
+                <span>State:</span>
+                <span id="state" class="status-value">--</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="new-target">Set Target Temperature (°C):</label>
+            <input type="number" id="new-target" name="target" step="0.5" min="-40" max="40">
+        </div>
+        
+        <button id="update-button">Update Target</button>
+        
+        <div class="footer">
+            <p>PicoFreezer Control System v1.0</p>
+        </div>
+    </div>
+
+    <script>
+        // Update the data periodically
+        function updateData() {
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-temp').textContent = data.temperature;
+                    document.getElementById('target-temp').textContent = data.target_temperature;
+                    
+                    const stateElement = document.getElementById('state');
+                    stateElement.textContent = data.state.charAt(0).toUpperCase() + data.state.slice(1);
+                    
+                    // Set class for styling based on state
+                    if (data.state === 'cooling') {
+                        stateElement.className = 'status-value cooling';
+                    } else {
+                        stateElement.className = 'status-value heating';
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Handle form submission
+        document.getElementById('update-button').addEventListener('click', function() {
+            const newTarget = document.getElementById('new-target').value;
+            
+            if (newTarget) {
+                fetch('/api/target', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'target=' + newTarget
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update displayed target temperature
+                        document.getElementById('target-temp').textContent = data.target;
+                        alert('Target temperature updated successfully!');
+                    } else {
+                        alert('Failed to update target temperature.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating target temperature.');
+                });
+            }
+        });
+
+        // Update data every 2 seconds
+        updateData();
+        setInterval(updateData, 2000);
+    </script>
+</body>
+</html>
