@@ -1,15 +1,11 @@
 import time
 
 class LcdApi:
+    """Implements the API for talking with HD44780 compatible character LCDs.
     
-    # Implements the API for talking with HD44780 compatible character LCDs.
-    # This class only knows what commands to send to the LCD, and not how to get
-    # them to the LCD.
-    #
-    # It is expected that a derived class will implement the hal_xxx functions.
-    #
-    # The following constant names were lifted from the avrlib lcd.h header file,
-    # with bit numbers changed to bit masks.
+    This class only knows what commands to send to the LCD, and not how to get
+    them to the LCD. It is expected that a derived class will implement the hal_xxx functions.
+    """
     
     # HD44780 LCD controller command set
     LCD_CLR             = 0x01  # DB0: clear display
@@ -44,6 +40,7 @@ class LcdApi:
     LCD_RW_READ         = 1
 
     def __init__(self, num_lines, num_columns):
+        """Initialize the LCD API with number of lines and columns."""
         self.num_lines = num_lines
         if self.num_lines > 4:
             self.num_lines = 4
@@ -62,41 +59,41 @@ class LcdApi:
         self.display_on()
 
     def clear(self):
-        # Clears the LCD display and moves the cursor to the top left corner
+        """Clears the LCD display and moves the cursor to the top left corner."""
         self.hal_write_command(self.LCD_CLR)
         self.hal_write_command(self.LCD_HOME)
         self.cursor_x = 0
         self.cursor_y = 0
 
     def show_cursor(self):
-        # Causes the cursor to be made visible
+        """Causes the cursor to be made visible."""
         self.hal_write_command(self.LCD_ON_CTRL | self.LCD_ON_DISPLAY |
                                self.LCD_ON_CURSOR)
 
     def hide_cursor(self):
-        # Causes the cursor to be hidden
+        """Causes the cursor to be hidden."""
         self.hal_write_command(self.LCD_ON_CTRL | self.LCD_ON_DISPLAY)
 
     def blink_cursor_on(self):
-        # Turns on the cursor, and makes it blink
+        """Turns on the cursor, and makes it blink."""
         self.hal_write_command(self.LCD_ON_CTRL | self.LCD_ON_DISPLAY |
                                self.LCD_ON_CURSOR | self.LCD_ON_BLINK)
 
     def blink_cursor_off(self):
-        # Turns on the cursor, and makes it no blink (i.e. be solid)
+        """Turns on the cursor, and makes it no blink (i.e. be solid)."""
         self.hal_write_command(self.LCD_ON_CTRL | self.LCD_ON_DISPLAY |
                                self.LCD_ON_CURSOR)
 
     def display_on(self):
-        # Turns on (i.e. unblanks) the LCD
+        """Turns on (i.e. unblanks) the LCD."""
         self.hal_write_command(self.LCD_ON_CTRL | self.LCD_ON_DISPLAY)
 
     def display_off(self):
-        # Turns off (i.e. blanks) the LCD
+        """Turns off (i.e. blanks) the LCD."""
         self.hal_write_command(self.LCD_ON_CTRL)
 
     def backlight_on(self):
-        # Turns the backlight on.
+        """Turns the backlight on."""
         
         # This isn't really an LCD command, but some modules have backlight
         # controls, so this allows the hal to pass through the command.

@@ -12,30 +12,23 @@ class WiFiGUI(BaseGUI):
     
     def __init__(self, lcd, wifi_manager, select_button, up_button, down_button, left_pin=11, right_pin=12):
         """Initialize the WiFi GUI"""
-        # Pass the button objects to the parent class
         super().__init__(lcd, up_button, down_button, select_button)
         
-        # Additional buttons for password entry
         self.left_button = Pin(left_pin, Pin.IN, Pin.PULL_UP) 
         self.right_button = Pin(right_pin, Pin.IN, Pin.PULL_UP)
         self.last_left_state = 1
         self.last_right_state = 1
         
-        # WiFi manager reference
         self.wifi = wifi_manager
         
-        # Initialize password manager
         self.password_manager = WiFiPasswordManager()
         
-        # GUI state
-        self.state = "initial"  # initial, scanning, network_list, password_entry, connected
+        self.state = "initial"
         
-        # Network list state
         self.networks = []
         self.current_network_index = 0
         self.top_network_index = 0
         
-        # Password entry state
         self.selected_network = ""
         self.password = ""
         self.cursor_pos = 0

@@ -8,7 +8,6 @@ class BaseGUI:
         """Initialize the base GUI with LCD and button pins"""
         self.lcd = lcd
         
-        # Configure buttons with internal pull-up resistors
         if isinstance(up_pin, Pin):
             self.up_button = up_pin
         else:

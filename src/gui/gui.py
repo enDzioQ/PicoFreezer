@@ -11,7 +11,6 @@ class GUI(BaseGUI):
         """Initialize the main GUI with LCD and button pins"""
         super().__init__(lcd, up_pin, down_pin, select_pin)
         
-        # Store module references
         self.temp_monitor = temp_monitor
         self.wifi = wifi_manager
         
@@ -74,7 +73,6 @@ class GUI(BaseGUI):
         selected = self.menu_options[self.current_position]
         
         if selected == "Temperature":
-            # Create a temperature GUI and run it
             temp_gui = TemperatureGUI(
                 self.lcd, 
                 self.select_button, 
@@ -83,10 +81,8 @@ class GUI(BaseGUI):
                 self.temp_monitor
             )
             temp_gui.run()
-            # Return to menu when temperature screen exits
             self.refresh_menu()
         elif selected == "WI-FI":
-            # Create a WiFi GUI and run it
             wifi_gui = WiFiGUI(
                 self.lcd, 
                 self.wifi,
@@ -95,7 +91,6 @@ class GUI(BaseGUI):
                 self.down_button
             )
             wifi_gui.run()
-            # Return to menu when WiFi screen exits
             self.refresh_menu()
         elif selected == "Option2":
             self.show_option("Option 2 selected")
@@ -109,7 +104,6 @@ class GUI(BaseGUI):
     def run(self):
         """Main loop for GUI operation"""
         while True:
-            # Check for button presses using the base class methods
             if self.is_up_pressed():
                 self.move_up()
                 
@@ -119,6 +113,5 @@ class GUI(BaseGUI):
             if self.is_select_pressed():
                 self.select_option()
 
-            # Update button states for next iteration
             self.update_button_states()
             utime.sleep(0.05)  # Small delay to prevent high CPU usage
