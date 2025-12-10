@@ -75,6 +75,12 @@ PicoFreezer/
 
 Contributions are welcome! Please fork the repository and submit a pull request.
 
+## Credits
+
+This project uses the following third-party libraries:
+
+- **LcdApi and I2cLcd**: LCD control libraries for HD44780 displays via I2C, authored by Tyler Peppy (T-622). These provide the low-level interface for LCD operations.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
