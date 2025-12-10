@@ -4,31 +4,27 @@ from machine import Pin
 from web.server import WebServer
 
 class TemperatureMonitor:
+    """Manages temperature monitoring and control using a DS sensor and LED indicator."""
+
     def __init__(self, ds_sensor, led_pin=16, wifi_manager=None):
         """Initialize the temperature monitor"""
         self.ds_sensor = ds_sensor
         self.led = Pin(led_pin, Pin.OUT)
         
-        # WiFi and web server references
         self.wifi_manager = wifi_manager
         self.web_server = None
         
-        # Track WiFi connection state to detect changes
         self.wifi_connected = False if wifi_manager is None else wifi_manager.is_connected()
         
-        # Get initial temperature right away instead of starting at 0.0
         initial_temp = self.ds_sensor.get_temperature()
         self.current_temp = initial_temp if initial_temp is not None else 0.0
         
         self.target_temp = 20.0
         
-        # Lock for thread-safe access to shared data
         self.lock = _thread.allocate_lock()
         
-        # Flag to control the monitoring thread
         self.running = True
         
-        # Thread identifier for better control
         self.thread_id = None
         
     

@@ -4,6 +4,8 @@ from onewire import OneWire
 from ds18x20 import DS18X20
 
 class DS:
+    """Handles DS18X20 temperature sensor operations."""
+
     def __init__(self, data_pin=22):
         """Initialize the DS18X20 temperature sensor"""
         self.ds_pin = Pin(data_pin)

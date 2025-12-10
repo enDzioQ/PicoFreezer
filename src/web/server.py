@@ -4,6 +4,8 @@ import gc
 import json
 
 class WebServer:
+    """Simple web server for PicoFreezer temperature monitoring."""
+
     def __init__(self, wifi_manager, temp_monitor):
         """Initialize the web server"""
         self.wifi = wifi_manager
@@ -12,7 +14,6 @@ class WebServer:
         self.is_running = False
         self.last_update_time = 0
         
-        # HTML template - load from file
         self._html = self._load_html_template()
         
     def start(self):

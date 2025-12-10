@@ -2,13 +2,13 @@ import network
 import time
 
 class WiFi:
+    """Manages WiFi connections for the PicoFreezer device."""
+
     def __init__(self):
         """Initialize the WiFi module"""
-        # Create a WLAN interface
         self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True)
         
-        # Track connection state
         self.connected = False
         self.current_ssid = None
     

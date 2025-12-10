@@ -3,15 +3,15 @@ import utime
 from pico_i2c_lcd import I2cLcd
 
 class LCD(I2cLcd):
+    """Extended LCD class with custom display methods for PicoFreezer."""
+
     def __init__(self, i2c_id=0, i2c_addr=39, sda_pin=0, scl_pin=1, num_rows=2, num_cols=16):
         """Initialize the LCD display with customizable parameters"""
         self.i2c = I2C(i2c_id, sda=Pin(sda_pin), scl=Pin(scl_pin), freq=400000)
-        # Call the parent class constructor
         super().__init__(self.i2c, i2c_addr, num_rows, num_cols)
         self.num_rows = num_rows
         self.num_cols = num_cols
         
-        # Define custom characters
         self.define_custom_chars()
     
     def display_text(self, text, row=0, col=0):
